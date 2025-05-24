@@ -84,8 +84,6 @@ int find_all_solutions(int a, int b, int c, int minx, int maxx, int miny, int ma
     shift_solution(x, y, a, b, (maxx - x)/b);
     if(x > maxx)
         shift_solution(x, y, a, b, -sign_b);
-    if(x < minx)
-        return 0;
     int rx1 = x;
 
     //finding x values within y constraint
@@ -99,8 +97,6 @@ int find_all_solutions(int a, int b, int c, int minx, int maxx, int miny, int ma
     shift_solution(x, y, a, b, -(maxy - y)/a);
     if(y > maxy)
         shift_solution(x, y, a, b, sign_a);
-    if(y < miny)
-        return 0;
     int rx2 = x;
 
     // finding intersection for the range (lx1, rx1), (lx2, rx2);
