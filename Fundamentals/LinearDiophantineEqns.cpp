@@ -42,7 +42,7 @@ int gcd(int a, int b, int &x, int &y)
     x = x1, y = x1 - y1 * (a / b);
     return d;
 }
-bool findAnySolution(int a, int b, int c, int &x0, int &y0, int g)
+bool findAnySolution(int a, int b, int c, int &x0, int &y0, int &g)
 {
     g = gcd(abs(a), abs(b), x0, y0);
     if (c % g)
@@ -55,7 +55,71 @@ bool findAnySolution(int a, int b, int c, int &x0, int &y0, int g)
         y0 *= -1;
     return true;
 }
-int main()
-{
+//finding all solutions within the constraint
+//minx <= x <= maxx, miny <= y <= maxy
+// logic : if you add b/g to x0 and subtract a/g from x1, the equation remains the same
+// (a*b/g gets added and subtracted, hence the equation is same but x0 and x1 have another
+// valid value)
+void shift_solution(int &x, int &y, int a, int b, int cnt){
+    x += cnt*b;
+    y -= cnt*a;
+}
+int find_all_solutions(int a, int b, int c, int minx, int maxx, int miny, int maxy){
+    int x, y, g;
+    if(!findAnySolution(a, b, c, x, y, g))
+        return 0;
+    a /= g;
+    b /= g;
+    int sign_a = (a > 0)? 1 : -1;
+    int sign_b = (b > 0)? 1 : -1;
+
+    // finding x values within x constraint
+    shift_solution(x, y, a, b, (minx - x)/b);
+    if(x < minx)
+        shift_solution(x, y, a, b, sign_b);
+    if(x > maxx)
+        return 0;
+    int lx1 = x;
+
+    shift_solution(x, y, a, b, (maxx - x)/b);
+    if(x > maxx)
+        shift_solution(x, y, a, b, -sign_b);
+    if(x < minx)
+        return 0;
+    int rx1 = x;
+
+    //finding x values within y constraint
+    shift_solution(x, y, a, b, -(miny - y)/a);
+    if(y < miny)
+        shift_solution(x, y, a, b, -sign_a);
+    if(y > maxy)
+        return 0;
+    int lx2 = x;
+
+    shift_solution(x, y, a, b, -(maxy - y)/a);
+    if(y > maxy)
+        shift_solution(x, y, a, b, sign_a);
+    if(y < miny)
+        return 0;
+    int rx2 = x;
+
+    // finding intersection for the range (lx1, rx1), (lx2, rx2);
+    if(lx2 > rx2)
+        swap(lx2, rx2);
+    int lx = max(lx1, lx2);
+    int rx = min(rx1, rx2);
+
+    // number of solutions
+    return (rx - lx)/abs(b) + 1;
+    
+}
+int main() {
+    int a = 6, b = 9, c = 30;
+    int minx = 0, maxx = 100;
+    int miny = 0, maxy = 100;
+
+    int count = find_all_solutions(a, b, c, minx, maxx, miny, maxy);
+    cout << "Number of solutions: " << count << endl;
+
     return 0;
 }
